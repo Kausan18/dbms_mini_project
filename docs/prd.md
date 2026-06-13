@@ -455,9 +455,16 @@ GET /api/auditlogs
 # 9. Project Folder Structure
 
 ```text
-src
-│
 ├── app
+│   ├── api
+│   │   ├── auth
+│   │   ├── customers
+│   │   ├── accounts
+│   │   ├── transactions
+│   │   ├── loans
+│   │   ├── admin
+│   │   └── manager
+│   │
 │   ├── login
 │   ├── signup
 │   ├── dashboard
@@ -467,37 +474,19 @@ src
 │   ├── admin
 │   └── manager
 │
-├── api
-│   ├── auth
-│   ├── customers
-│   ├── accounts
-│   ├── transactions
-│   ├── loans
-│   ├── admin
-│   └── manager
-│
 ├── components
+│   ├── dashboard
+│   └── layout
 │
 ├── services
-│   ├── account.service.ts
-│   ├── transaction.service.ts
-│   ├── customer.service.ts
-│   └── loan.service.ts
-│
-├── lib
-│   ├── supabase.ts
-│   ├── auth.ts
-│   └── db.ts
-│
-├── hooks
-│
-├── utils
-│
 ├── types
-│
-└── middleware.ts
-```
-
+├── hooks
+├── utils
+├── constants
+├── middleware
+├── lib
+├── docs
+└── public
 ---
 
 # 10. Security Requirements
