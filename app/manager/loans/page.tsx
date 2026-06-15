@@ -25,7 +25,7 @@ type LoanRecord = Record<string, unknown> & {
 export default function LoansPage() {
   const [activeTab, setActiveTab] = useState<"pending" | "all">("pending")
   const [loans, setLoans] = useState<LoanRecord[]>([])
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   
   // Action state
