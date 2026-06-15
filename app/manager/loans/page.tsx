@@ -109,7 +109,7 @@ export default function LoansPage() {
       const res = await fetch(`/api/loans/${actionLoan.id || actionLoan.loan_id}/${actionType}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ manager_id: localStorage.getItem("manager_id") || "" }),
+        body: JSON.stringify({ manager_id: localStorage.getItem("bms_profile_id_manager") || localStorage.getItem("bms_profile_id") || "" }),
       })
 
       if (!res.ok) {

@@ -1,11 +1,12 @@
-import { Navbar } from "@/components/ui"
-import { Sidebar as AdminSidebar } from "@/components/ui/Sidebar"
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+import { Sidebar as CustomerSidebar } from "@/components/ui/Sidebar"
+import { Navbar as CustomerNavbar } from "@/components/ui/Navbar"
+
+export default function CustomerLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen flex flex-col bg-slate-900">
-      <Navbar />
+      <CustomerNavbar />
       <div className="flex flex-1 overflow-hidden relative">
-        <AdminSidebar />
+        <CustomerSidebar />
         <main className="flex-1 overflow-y-auto w-full p-6 lg:p-8 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
           <div className="mx-auto max-w-7xl">{children}</div>
         </main>

@@ -5,9 +5,24 @@ import Link from "next/link"
 import { Bell, Search, ShieldCheck, LogOut } from "lucide-react"
 
 export function Navbar() {
+  const [label, setLabel] = React.useState<string>("User")
+  const [roleTag, setRoleTag] = React.useState<string>("Portal")
+
+ React.useEffect(() => {
+    const load = () => {
+      try {
+        const profile = JSON.parse(localStorage.getItem("bms_profile") || "{}")
+        const role = localStorage.getItem("bms_role") || ""
+        if (profile.name) setLabel(profile.name)
+        if (role) setRoleTag(role.charAt(0).toUpperCase() + role.slice(1) + " Portal")
+      } catch { /* ignore */ }
+    }
+    load()
+  }, [])
+
   const handleLogout = () => {
     localStorage.clear()
-    window.location.href = "/"
+    window.location.href = "/login"
   }
 
   return (
@@ -34,16 +49,16 @@ export function Navbar() {
           <span className="absolute -top-1 -right-1 w-2 h-2 bg-rose-500 rounded-full ring-2 ring-slate-900"></span>
         </button>
         
-        <div className="h-8 w-px bg-slate-700 decoration-slate-700"></div>
+        <div className="h-8 w-px bg-slate-700"></div>
 
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-3">
             <div className="flex flex-col items-end">
-              <span className="text-sm font-semibold leading-tight text-white">Manager</span>
-              <span className="text-xs font-medium text-slate-400">Admin Portal</span>
+              <span className="text-sm font-semibold leading-tight text-white">{label}</span>
+              <span className="text-xs font-medium text-slate-400">{roleTag}</span>
             </div>
-            <div className="h-10 w-10 border border-slate-600 rounded-full bg-linear-to-tr from-slate-700 to-slate-600 flex items-center justify-center text-white font-bold shadow-md shadow-slate-900/50">
-              M
+            <div className="h-10 w-10 border border-slate-600 rounded-full bg-gradient-to-tr from-slate-700 to-slate-600 flex items-center justify-center text-white font-bold shadow-md shadow-slate-900/50">
+              {label.charAt(0).toUpperCase()}
             </div>
           </div>
           <button 
