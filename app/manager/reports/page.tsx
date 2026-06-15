@@ -8,6 +8,7 @@ type LoanRecord = {
   loan_id?: string | number
   id?: string | number
   customer_id?: string | number
+  customer?: { name?: string; email?: string }
   loan_amount?: number | string
   interest_rate?: number | string
   [key: string]: unknown
@@ -60,7 +61,12 @@ export default function ReportsPage() {
 
   const columns = [
     { key: "loan_id", label: "ID", render: (row: LoanRecord) => <span className="font-mono text-slate-500">#{String(row.loan_id ?? row.id ?? "")}</span> },
-    { key: "customer_id", label: "Customer ID", render: (row: LoanRecord) => <span className="font-semibold">{String(row.customer_id ?? "")}</span> },
+    { key: "customer", label: "Customer", render: (row: LoanRecord) => (
+      <div>
+        <p className="font-semibold text-slate-800">{String(row.customer?.name ?? row.customer_id ?? "")}</p>
+        <p className="text-xs text-slate-400">{String(row.customer?.email ?? "")}</p>
+      </div>
+    )},
     { key: "loan_amount", label: "Amount", render: (row: LoanRecord) => <span className="font-bold text-slate-800 tracking-tight">₹{Number(row.loan_amount ?? 0).toLocaleString("en-IN")}</span> },
     { key: "interest_rate", label: "Rate", render: (row: LoanRecord) => <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md text-xs font-bold">{String(row.interest_rate ?? 0)}%</span> }
   ]

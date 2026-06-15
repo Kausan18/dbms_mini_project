@@ -13,6 +13,7 @@ type LoanRecord = Record<string, unknown> & {
   id?: string | number
   loan_id?: string | number
   customer_id?: string | number
+  customer?: { name?: string; email?: string }
   loan_amount?: number | string
   amount?: number | string
   interest_rate?: number | string
@@ -133,7 +134,12 @@ export default function LoansPage() {
   }
 
   const allColumns = [
-    { key: "customer_id", label: "Customer ID" },
+    { key: "customer", label: "Customer", render: (row: LoanRecord) => (
+      <div>
+        <p className="font-semibold text-slate-800">{String(row.customer?.name ?? row.customer_id ?? "")}</p>
+        <p className="text-xs text-slate-400">{String(row.customer?.email ?? "")}</p>
+      </div>
+    )},
     { key: "loan_type", label: "Loan Type" },
     { 
       key: "loan_amount", 

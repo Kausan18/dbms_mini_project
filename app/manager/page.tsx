@@ -44,8 +44,8 @@ export default function ManagerDashboard() {
           approved: Array.isArray(approved) ? approved.length : (approved.data?.length || 0),
           rejected: Array.isArray(rejected) ? rejected.length : (rejected.data?.length || 0),
         })
-      } catch (err: any) {
-        setError(err.message || "An error occurred while fetching dashboard stats.")
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : "An error occurred while fetching dashboard stats.")
       } finally {
         setLoading(false)
       }
