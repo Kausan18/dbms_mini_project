@@ -9,14 +9,27 @@ function formatDate(dateString: string) {
   return new Date(dateString).toLocaleDateString()
 }
 
+type LoanRecord = Record<string, unknown> & {
+  id?: string | number
+  loan_id?: string | number
+  customer_id?: string | number
+  loan_amount?: number | string
+  amount?: number | string
+  interest_rate?: number | string
+  application_date?: string
+  created_at?: string
+  applied_date?: string
+  status?: string
+}
+
 export default function LoansPage() {
   const [activeTab, setActiveTab] = useState<"pending" | "all">("pending")
-  const [loans, setLoans] = useState<any[]>([])
+  const [loans, setLoans] = useState<LoanRecord[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   
   // Action state
-  const [actionLoan, setActionLoan] = useState<any | null>(null)
+  const [actionLoan, setActionLoan] = useState<Record<string, unknown> | null>(null)
   const [actionType, setActionType] = useState<"approve" | "reject" | null>(null)
   const [actionLoading, setActionLoading] = useState(false)
 
@@ -29,7 +42,7 @@ export default function LoansPage() {
       if (!res.ok) throw new Error("Failed to fetch loans")
       const json = await res.json()
       
-      let allLoans: any[] = []
+      let allLoans: LoanRecord[] = []
       
       // handle different structures gracefully
       if (Array.isArray(json)) {
@@ -46,15 +59,19 @@ export default function LoansPage() {
       }
       
       setLoans(Array.isArray(allLoans) ? allLoans : [])
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to fetch loans")
     } finally {
       setLoading(false)
     }
   }
 
   useEffect(() => {
-    fetchLoans(activeTab)
+    const loadLoans = async () => {
+      await fetchLoans(activeTab)
+    }
+
+    void loadLoans()
   }, [activeTab])
 
   const [toastMessage, setToastMessage] = useState<{ msg: string; type: "error" | "success" } | null>(null)
@@ -105,8 +122,11 @@ export default function LoansPage() {
       
       // Silently sync background data
       fetchLoans(activeTab) 
-    } catch (err: any) {
-      setToastMessage({ msg: err.message, type: "error" })
+    } catch (err: unknown) {
+      setToastMessage({
+        msg: err instanceof Error ? err.message : "Failed to process loan application",
+        type: "error",
+      })
     } finally {
       setActionLoading(false)
     }
@@ -118,28 +138,28 @@ export default function LoansPage() {
     { 
       key: "loan_amount", 
       label: "Amount", 
-      render: (row: any) => `₹${(row.loan_amount || row.amount || 0).toLocaleString("en-IN")}`
+      render: (row: LoanRecord) => `₹${(Number(row.loan_amount ?? row.amount ?? 0)).toLocaleString("en-IN")}`
     },
     { 
       key: "interest_rate", 
       label: "Interest Rate", 
-      render: (row: any) => `${row.interest_rate}%`
+      render: (row: LoanRecord) => `${row.interest_rate ?? 0}%`
     },
     { 
       key: "application_date", 
       label: "Applied Date", 
-      render: (row: any) => formatDate(row.application_date || row.created_at || row.applied_date)
+      render: (row: LoanRecord) => formatDate(String(row.application_date ?? row.created_at ?? row.applied_date ?? ""))
     },
     {
       key: "status",
       label: "Status",
-      render: (row: any) => (
+      render: (row: LoanRecord) => (
         <Badge variant={
-          row.status === "approved" ? "approved" : 
-          row.status === "rejected" ? "rejected" : 
+          row.status === "approved" ? "approved" :
+          row.status === "rejected" ? "rejected" :
           row.status === "pending" ? "pending" : "default"
         }>
-          {row.status?.toUpperCase() || "UNKNOWN"}
+          {String(row.status ?? "UNKNOWN").toUpperCase()}
         </Badge>
       )
     }
@@ -150,7 +170,7 @@ export default function LoansPage() {
     {
       key: "actions",
       label: "Actions",
-      render: (row: any) => (
+      render: (row: LoanRecord) => (
         <div className="flex gap-2 justify-end">
           <Button 
             size="sm" 

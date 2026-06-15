@@ -4,9 +4,18 @@ import { useEffect, useState } from "react"
 import { StatCard, LoadingSpinner, DataTable } from "@/components/ui"
 import { IndianRupee, CheckCircle, XCircle, BarChart2 } from "lucide-react"
 
+type LoanRecord = {
+  loan_id?: string | number
+  id?: string | number
+  customer_id?: string | number
+  loan_amount?: number | string
+  interest_rate?: number | string
+  [key: string]: unknown
+}
+
 export default function ReportsPage() {
-  const [approvedLoans, setApprovedLoans] = useState<any[]>([])
-  const [rejectedLoans, setRejectedLoans] = useState<any[]>([])
+  const [approvedLoans, setApprovedLoans] = useState<LoanRecord[]>([])
+  const [rejectedLoans, setRejectedLoans] = useState<LoanRecord[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -26,11 +35,19 @@ export default function ReportsPage() {
           rejRes.json()
         ])
 
-        setApprovedLoans(Array.isArray(appData) ? appData : appData.data || [])
-        setRejectedLoans(Array.isArray(rejData) ? rejData : rejData.data || [])
+        const normalizeLoans = (value: unknown): LoanRecord[] => {
+          if (Array.isArray(value)) return value as LoanRecord[]
+          if (value && typeof value === "object" && "data" in value) {
+            const candidate = (value as { data?: unknown }).data
+            return Array.isArray(candidate) ? (candidate as LoanRecord[]) : []
+          }
+          return []
+        }
 
-      } catch (err: any) {
-        setError(err.message)
+        setApprovedLoans(normalizeLoans(appData))
+        setRejectedLoans(normalizeLoans(rejData))
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : "Failed to fetch reports data")
       } finally {
         setLoading(false)
       }
@@ -39,13 +56,13 @@ export default function ReportsPage() {
     fetchReportsData()
   }, [])
 
-  const totalApprovedAmount = approvedLoans.reduce((sum, loan) => sum + (Number(loan.loan_amount) || 0), 0)
+  const totalApprovedAmount = approvedLoans.reduce((sum, loan) => sum + Number(loan.loan_amount ?? 0), 0)
 
   const columns = [
-    { key: "loan_id", label: "ID", render: (row: any) => <span className="font-mono text-slate-500">#{row.loan_id || row.id}</span> },
-    { key: "customer_id", label: "Customer ID", render: (row: any) => <span className="font-semibold">{row.customer_id}</span> },
-    { key: "loan_amount", label: "Amount", render: (row: any) => <span className="font-bold text-slate-800 tracking-tight">₹{(row.loan_amount || 0).toLocaleString("en-IN")}</span> },
-    { key: "interest_rate", label: "Rate", render: (row: any) => <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md text-xs font-bold">{row.interest_rate}%</span> }
+    { key: "loan_id", label: "ID", render: (row: LoanRecord) => <span className="font-mono text-slate-500">#{String(row.loan_id ?? row.id ?? "")}</span> },
+    { key: "customer_id", label: "Customer ID", render: (row: LoanRecord) => <span className="font-semibold">{String(row.customer_id ?? "")}</span> },
+    { key: "loan_amount", label: "Amount", render: (row: LoanRecord) => <span className="font-bold text-slate-800 tracking-tight">₹{Number(row.loan_amount ?? 0).toLocaleString("en-IN")}</span> },
+    { key: "interest_rate", label: "Rate", render: (row: LoanRecord) => <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md text-xs font-bold">{String(row.interest_rate ?? 0)}%</span> }
   ]
 
   if (loading) {
