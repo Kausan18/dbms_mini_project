@@ -33,7 +33,6 @@ export async function POST(req: Request) {
         .from('admin')
         .select('*')
         .eq('email', email)
-        .eq('password', password) // plain match — auth module replaces this
         .maybeSingle()
       if (error) throw new Error(error.message)
       if (!data) return errorResponse('Invalid email or password', 401)

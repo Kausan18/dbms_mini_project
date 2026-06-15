@@ -29,20 +29,19 @@ type Loan = {
 }
 
 export default function CustomerDashboard() {
-  const [customerId, setCustomerId] = useState("")
-  const [customerName, setCustomerName] = useState("")
+  const [customerId] = useState(() => {
+    try { return localStorage.getItem("bms_profile_id") || "" } catch { return "" }
+  })
+  const [customerName] = useState(() => {
+    try { return JSON.parse(localStorage.getItem("bms_profile") || "{}").name || "Customer" } catch { return "Customer" }
+  })
   const [accounts, setAccounts] = useState<Account[]>([])
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [loans, setLoans] = useState<Loan[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const id = localStorage.getItem("bms_profile_id") || ""
-    const profile = JSON.parse(localStorage.getItem("bms_profile") || "{}")
-    setCustomerId(id)
-    setCustomerName(profile.name || "Customer")
-
-    if (!id) {
+    if (!customerId) {
       window.location.href = "/login"
       return
     }
@@ -50,8 +49,8 @@ export default function CustomerDashboard() {
     const load = async () => {
       try {
         const [accRes, loanRes] = await Promise.all([
-          fetch(`/api/customers/${id}/accounts`),
-          fetch(`/api/customers/${id}/loans`),
+          fetch(`/api/customers/${customerId}/accounts`),
+          fetch(`/api/customers/${customerId}/loans`),
         ])
         const accData = await accRes.json()
         const loanData = await loanRes.json()
@@ -60,7 +59,6 @@ export default function CustomerDashboard() {
         setAccounts(accs)
         setLoans(loanData.data || [])
 
-        // Fetch recent transactions for first account
         if (accs.length > 0) {
           const txRes = await fetch(`/api/accounts/${accs[0].account_no}/transactions`)
           const txData = await txRes.json()
@@ -75,7 +73,7 @@ export default function CustomerDashboard() {
     }
 
     load()
-  }, [])
+  }, [customerId])
 
   const totalBalance = accounts.reduce((s, a) => s + Number(a.balance), 0)
 
@@ -195,7 +193,7 @@ export default function CustomerDashboard() {
                     )}
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-slate-800 capitalize">{tx.transaction_type.replace("_", " ")}</p>
+                    <p className="text-sm font-bold text-slate-800 capitalize">{tx.transaction_type.replace(/_/g, " ")}</p>
                     <p className="text-xs text-slate-400">{new Date(tx.transaction_date).toLocaleDateString()}</p>
                   </div>
                 </div>

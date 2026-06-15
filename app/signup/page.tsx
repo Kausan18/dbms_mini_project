@@ -72,7 +72,13 @@ export default function SignupPage() {
         return
       }
       // Persist session in localStorage
-      localStorage.setItem("bms_role", json.data.role)
+      // Store per-role so multiple tabs don't overwrite each other
+      const r = json.data.role as string
+      localStorage.setItem(`bms_role_${r}`, r)
+      localStorage.setItem(`bms_profile_id_${r}`, json.data.profile_id)
+      localStorage.setItem(`bms_profile_${r}`, JSON.stringify(json.data.profile))
+      // Also set the "active" session for the current tab
+      localStorage.setItem("bms_role", r)
       localStorage.setItem("bms_profile_id", json.data.profile_id)
       localStorage.setItem("bms_profile", JSON.stringify(json.data.profile))
 

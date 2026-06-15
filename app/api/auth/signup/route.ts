@@ -7,9 +7,10 @@ export async function POST(req: Request) {
     const body = await req.json()
     const { name, email, phone, address, password, role } = body
 
-    if (!name || !email || !phone || !password || !role) {
-      return errorResponse('name, email, phone, password and role are required')
-    }
+    const phoneRequired = role !== 'admin'
+   if (!name || !email || !password || !role || (phoneRequired && !phone)) {
+  return errorResponse('name, email, phone, password and role are required')
+}
 
     if (!['customer', 'admin', 'manager'].includes(role)) {
       return errorResponse('role must be one of: customer, admin, manager')
@@ -35,7 +36,7 @@ export async function POST(req: Request) {
     } else if (role === 'admin') {
       const { data, error } = await supabaseServer
         .from('admin')
-        .insert({ name, email, password }) // password stored as-is for now (auth added later)
+        .insert({ name, email}) // password stored as-is for now (auth added later)
         .select()
         .single()
       if (error) throw new Error(error.message)

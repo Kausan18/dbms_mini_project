@@ -5,18 +5,19 @@ import Link from "next/link"
 import { Bell, Search, ShieldCheck, LogOut } from "lucide-react"
 
 export function Navbar() {
-  const [label, setLabel] = React.useState("Manager")
-  const [roleTag, setRoleTag] = React.useState("Admin Portal")
+  const [label, setLabel] = React.useState<string>("User")
+  const [roleTag, setRoleTag] = React.useState<string>("Portal")
 
-  React.useEffect(() => {
-    try {
-      const profile = JSON.parse(localStorage.getItem("bms_profile") || "{}")
-      const role = localStorage.getItem("bms_role") || ""
-      if (profile.name) setLabel(profile.name)
-      if (role) setRoleTag(role.charAt(0).toUpperCase() + role.slice(1) + " Portal")
-    } catch {
-      // ignore
+ React.useEffect(() => {
+    const load = () => {
+      try {
+        const profile = JSON.parse(localStorage.getItem("bms_profile") || "{}")
+        const role = localStorage.getItem("bms_role") || ""
+        if (profile.name) setLabel(profile.name)
+        if (role) setRoleTag(role.charAt(0).toUpperCase() + role.slice(1) + " Portal")
+      } catch { /* ignore */ }
     }
+    load()
   }, [])
 
   const handleLogout = () => {

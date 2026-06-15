@@ -27,6 +27,17 @@ export default function AccountsPage() {
   const [loading, setLoading] = useState(true)
   const [txLoading, setTxLoading] = useState(false)
 
+  const loadTx = async (acc: Account) => {
+    setSelected(acc)
+    setTxLoading(true)
+    try {
+      const res = await fetch(`/api/accounts/${acc.account_no}/transactions`)
+      const d = await res.json()
+      setTransactions(d.data || [])
+    } finally {
+      setTxLoading(false)
+    }
+  }
   useEffect(() => {
     const id = localStorage.getItem("bms_profile_id") || ""
     if (!id) { window.location.href = "/login"; return }
@@ -41,17 +52,7 @@ export default function AccountsPage() {
       .finally(() => setLoading(false))
   }, [])
 
-  const loadTx = async (acc: Account) => {
-    setSelected(acc)
-    setTxLoading(true)
-    try {
-      const res = await fetch(`/api/accounts/${acc.account_no}/transactions`)
-      const d = await res.json()
-      setTransactions(d.data || [])
-    } finally {
-      setTxLoading(false)
-    }
-  }
+  
 
   if (loading) return <div className="flex h-[60vh] items-center justify-center"><LoadingSpinner /></div>
 

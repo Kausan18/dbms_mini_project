@@ -1,5 +1,5 @@
-import { CustomerSidebar } from "@/components/ui/CustomerSidebar"
-import { CustomerNavbar } from "@/components/ui/CustomerNavbar"
+import { Sidebar as CustomerSidebar } from "@/components/ui/Sidebar"
+import { Navbar as CustomerNavbar } from "@/components/ui/Navbar"
 
 export default function CustomerLayout({ children }: { children: React.ReactNode }) {
   return (

@@ -6,14 +6,35 @@ import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { LayoutDashboard, CreditCard, BarChart3, ShieldCheck } from "lucide-react"
 
-const navigation = [
-  { name: 'Overview', href: '/manager', icon: LayoutDashboard },
-  { name: 'Loans Application', href: '/manager/loans', icon: CreditCard },
-  { name: 'Financial Reports', href: '/manager/reports', icon: BarChart3 },
-]
-
+const NAV_BY_ROLE: Record<string, { name: string; href: string; icon: React.ElementType }[]> = {
+  manager: [
+    { name: 'Overview', href: '/manager', icon: LayoutDashboard },
+    { name: 'Loans Application', href: '/manager/loans', icon: CreditCard },
+    { name: 'Financial Reports', href: '/manager/reports', icon: BarChart3 },
+  ],
+  admin: [
+    { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
+    { name: 'Customers', href: '/admin/customers', icon: CreditCard },
+    { name: 'Accounts', href: '/admin/accounts', icon: BarChart3 },
+    { name: 'Transactions', href: '/admin/transactions', icon: ShieldCheck },
+  ],
+  customer: [
+    { name: 'Dashboard', href: '/customer', icon: LayoutDashboard },
+    { name: 'Accounts', href: '/customer/accounts', icon: CreditCard },
+    { name: 'Transactions', href: '/customer/transactions', icon: BarChart3 },
+    { name: 'Loans', href: '/customer/loans', icon: ShieldCheck },
+  ],
+}
 export function Sidebar() {
   const pathname = usePathname()
+   const [role, setRole] = React.useState("manager")
+  React.useEffect(() => {
+    const getRole = () => {
+      try { return localStorage.getItem("bms_role") || "manager" } catch { return "manager" }
+    }
+    setRole(getRole())
+  }, [])
+  const navigation = NAV_BY_ROLE[role] ?? NAV_BY_ROLE.manager
   const [isCollapsed, setIsCollapsed] = React.useState(false)
 
   return (

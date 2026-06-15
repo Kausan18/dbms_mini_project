@@ -1,6 +1,5 @@
 import { Navbar } from "@/components/ui"
-import { AdminSidebar } from "@/components/ui/AdminSidebar"
-
+import { Sidebar as AdminSidebar } from "@/components/ui/Sidebar"
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen flex flex-col bg-slate-900">
