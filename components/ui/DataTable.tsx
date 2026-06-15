@@ -71,11 +71,17 @@ export function DataTable<T extends { id?: string | number, loan_id?: string | n
               key={row.id || row.loan_id || row.customer_id || i}
               className="border-b border-slate-100 hover:bg-slate-50/80 transition-colors group"
             >
-              {columns.map((col) => (
-                <TableCell key={`${row.id || row.loan_id || i}-${String(col.key)}`} className="py-4 text-sm font-medium text-slate-700">
-                  {col.render ? col.render(row) : (row as any)[col.key] as React.ReactNode}
-                </TableCell>
-              ))}
+              {columns.map((col) => {
+                const cellValue = col.render
+                  ? col.render(row)
+                  : (row as Record<string, unknown>)[String(col.key)] as React.ReactNode
+
+                return (
+                  <TableCell key={`${row.id || row.loan_id || i}-${String(col.key)}`} className="py-4 text-sm font-medium text-slate-700">
+                    {cellValue}
+                  </TableCell>
+                )
+              })}
               {(onEdit || onDelete) && (
                 <TableCell className="text-right whitespace-nowrap py-4">
                   {onEdit && (
