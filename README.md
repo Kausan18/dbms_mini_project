@@ -197,7 +197,7 @@ To demo all three roles, use **three separate browsers** (or one normal + one in
 
 The project is deployed on **Vercel** connected to **Supabase Cloud**.
 
-Live URL: `https://your-project.vercel.app`
+Live URL: https://dbms-mini-project-liard.vercel.app
 
 Environment variables are configured in Vercel's dashboard under Project Settings → Environment Variables.
 
